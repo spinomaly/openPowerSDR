@@ -35382,7 +35382,7 @@ namespace PowerSDR
                     Display.CurrentDisplayMode = DisplayMode.PHASE2;
                     break;
                 case "Waterfall":
-                    Display.ClearWaterfallBmp(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    //W6VH Display.ClearWaterfallBmp(); // Reset the waterfall buffer and prevent overrun into rx2 display
                     Display.CurrentDisplayMode = DisplayMode.WATERFALL;
                     wdsp.SetRXASpectrum(wdsp.id(0, 0), 0, 0, 0, 0);
                     CalcDisplayFreq();
@@ -35396,7 +35396,7 @@ namespace PowerSDR
                     wdsp.SetRXASpectrum(wdsp.id(0, 0), 1, 0, 0, 0);
                     break;
                 case "Panafall":
-                    Display.ClearWaterfallBmp(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    //W6VH Display.ClearWaterfallBmp(); // Reset the waterfall buffer and prevent overrun into rx2 display
                     Display.CurrentDisplayMode = DisplayMode.PANAFALL;
                     wdsp.SetRXASpectrum(wdsp.id(0, 0), 0, 0, 0, 0);
                     CalcDisplayFreq();
@@ -35468,6 +35468,12 @@ namespace PowerSDR
                     //chkDisplayPeak.Checked = false;
                     break;
                 case DisplayMode.WATERFALL:
+                    // W6VH
+                    if (Display.RX2Enabled)
+                        Display.ResetWaterfallBmp(2); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    else
+                        Display.ResetWaterfallBmp(1); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
                     chkDisplayAVG.Enabled = true;
                     if (chkDisplayAVG.Checked)
                         chkDisplayAVG.BackColor = button_selected_color;
@@ -35541,6 +35547,13 @@ namespace PowerSDR
                     RX1Filter = rx1_filter;
                     break;
                 case DisplayMode.PANAFALL:
+                    //W6VH Display.ResetWaterfallBmp(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
+                    if (Display.RX2Enabled)
+                        Display.ResetWaterfallBmp(4); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    else
+                        Display.ResetWaterfallBmp(2); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
                     chkDisplayAVG.Enabled = true;
                     if (chkDisplayAVG.Checked)
                         chkDisplayAVG.BackColor = button_selected_color;
@@ -42301,6 +42314,7 @@ namespace PowerSDR
                     {
                         Thread.Sleep(100);
                         Display.Init();
+                        comboDisplayMode_SelectedIndexChanged(this, EventArgs.Empty); // W6VH - Force resize of waterfall bmp's
                         if (!booting)
                         {
                             UpdateDisplay();
@@ -46149,7 +46163,10 @@ namespace PowerSDR
                     Display.CurrentDisplayModeBottom = DisplayMode.PHASE2;
                     break;
                 case "Waterfall":
-                    Display.ClearWaterfallBmp2(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    //W6VH Display.ClearWaterfallBmp2(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
+                        Display.ResetWaterfallBmp2(1); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
                     Display.CurrentDisplayModeBottom = DisplayMode.WATERFALL;
                     if (chkSplitDisplay.Checked)
                     {
@@ -46161,7 +46178,10 @@ namespace PowerSDR
                     Display.CurrentDisplayModeBottom = DisplayMode.HISTOGRAM;
                     break;
                 case "Panafall":
-                    Display.ClearWaterfallBmp2(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    //W6VH Display.ClearWaterfallBmp2(); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
+                    Display.ResetWaterfallBmp2(2); // Reset the waterfall buffer and prevent overrun into rx2 display
+                    // W6VH
                     Display.CurrentDisplayModeBottom = DisplayMode.PANAFALL;
                     if (chkSplitDisplay.Checked)
                     {
@@ -48065,7 +48085,10 @@ namespace PowerSDR
                     Display.CurrentDisplayModeBottom = DisplayMode.PHASE2;
                     break;
                 case "Waterfall":
-                    Display.ClearWaterfallBmp2();
+                    // Display.ClearWaterfallBmp2(); W6VH
+                    // W6VH
+                    Display.ResetWaterfallBmp2(2);
+                    // W6VH
                     Display.CurrentDisplayModeBottom = DisplayMode.WATERFALL;
                     if (chkSplitDisplay.Checked) CalcDisplayFreq();
                     break;
@@ -48073,7 +48096,9 @@ namespace PowerSDR
                     Display.CurrentDisplayModeBottom = DisplayMode.HISTOGRAM;
                     break;
                 case "Panafall":
-                    Display.ClearWaterfallBmp2();
+                    // W6VH
+                    Display.ResetWaterfallBmp2(4);
+                    // W6VH
                     Display.CurrentDisplayModeBottom = DisplayMode.PANAFALL;
                     if (chkSplitDisplay.Checked) CalcDisplayFreq();
                     break;
