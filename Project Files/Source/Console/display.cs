@@ -101,7 +101,7 @@ namespace PowerSDR
         #region Variable Declaration
 
         public const float CLEAR_FLAG = -999.999F;				// for resetting buffers
-        public const int BUFFER_SIZE = 4096;
+        public const int BUFFER_SIZE = 16384;
 
         public static Console console;
         //private static Mutex background_image_mutex;			// used to lock the base display image
@@ -3864,7 +3864,7 @@ namespace PowerSDR
                 {
                     start_sample_index = (BUFFER_SIZE >> 1) + (int)((Low * BUFFER_SIZE) / rx_sample_rate);
                     num_samples = (int)((BUFFER_SIZE * (High - Low)) / rx_sample_rate);
-                    if (start_sample_index < 0) start_sample_index += 4096;
+                    if (start_sample_index < 0) start_sample_index += 16384;
                     if ((num_samples - start_sample_index) > (BUFFER_SIZE + 1))
                         num_samples = (BUFFER_SIZE - start_sample_index);
 
@@ -3885,12 +3885,12 @@ namespace PowerSDR
                         {
                             if (slope <= 1.0 || lindex == rindex)
                             {
-                                max = current_display_data[lindex % 4096] * ((float)lindex - dval + 1) + current_display_data[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                max = current_display_data[lindex % 16384] * ((float)lindex - dval + 1) + current_display_data[(lindex + 1) % 16384] * (dval - (float)lindex);
                             }
                             else
                             {
                                 for (int j = lindex; j < rindex; j++)
-                                    if (current_display_data[j % 4096] > max) max = current_display_data[j % 4096];
+                                    if (current_display_data[j % 16384] > max) max = current_display_data[j % 16384];
                             }
                         }
 
@@ -3902,12 +3902,12 @@ namespace PowerSDR
                         {
                             if (slope <= 1.0 || lindex == rindex)
                             {
-                                max = current_display_data_bottom[lindex % 4096] * ((float)lindex - dval + 1) + current_display_data_bottom[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                max = current_display_data_bottom[lindex % 16384] * ((float)lindex - dval + 1) + current_display_data_bottom[(lindex + 1) % 16384] * (dval - (float)lindex);
                             }
                             else
                             {
                                 for (int j = lindex; j < rindex; j++)
-                                    if (current_display_data_bottom[j % 4096] > max) max = current_display_data_bottom[j % 4096];
+                                    if (current_display_data_bottom[j % 16384] > max) max = current_display_data_bottom[j % 16384];
                             }
                         }
                         else max = current_display_data_bottom[i];
@@ -7393,13 +7393,10 @@ namespace PowerSDR
                 }
                 else if (!tx_on_vfob)
                 {
-                    if (rx == 1)
-                    {
-                        g.DrawLine(tx_filter_pen, filter_left_x, top, filter_left_x, H);        // draw tx filter overlay
-                        g.DrawLine(tx_filter_pen, filter_left_x + 1, top, filter_left_x + 1, H);    // draw tx filter overlay
-                        g.DrawLine(tx_filter_pen, filter_right_x, top, filter_right_x, H);  // draw tx filter overlay
-                        g.DrawLine(tx_filter_pen, filter_right_x + 1, top, filter_right_x + 1, H);// draw tx filter overlay
-                    }
+                    g.DrawLine(tx_filter_pen, filter_left_x, top, filter_left_x, H);		// draw tx filter overlay
+                    g.DrawLine(tx_filter_pen, filter_left_x + 1, top, filter_left_x + 1, H);	// draw tx filter overlay
+                    g.DrawLine(tx_filter_pen, filter_right_x, top, filter_right_x, H);	// draw tx filter overlay
+                    g.DrawLine(tx_filter_pen, filter_right_x + 1, top, filter_right_x + 1, H);// draw tx filter overlay
                 }
             }
 
@@ -8770,17 +8767,8 @@ namespace PowerSDR
 
         private static void DrawWaterfallGrid(ref Graphics g, int W, int H, int rx, bool bottom)
         {
-            if (rx == 1)
-            {
-                if (current_display_mode == DisplayMode.PANAFALL)
-                {
-                    g.FillRectangle(display_background_brush, 0, H, W, H);
-                }
-            }
-            else if (rx == 2)
-            {
-                if (current_display_mode_bottom == DisplayMode.PANAFALL) g.FillRectangle(display_background_brush, 0, 3 * H, W, H);
-            }
+            if (bottom) g.FillRectangle(display_background_brush, 0, bottom ? H : 0, W, H);
+            else if (current_display_mode_bottom == DisplayMode.PANAFALL && rx == 2) g.FillRectangle(display_background_brush, 0, 3 * H, W, H);
 
             int low = 0;					// initialize variables
             int high = 0;
@@ -10535,7 +10523,7 @@ namespace PowerSDR
             {
                 start_sample_index = (BUFFER_SIZE >> 1) + ((Low * BUFFER_SIZE) / tx_sample_rate);
                 num_samples = (width * BUFFER_SIZE / tx_sample_rate);
-                if (start_sample_index < 0) start_sample_index += 4096;
+                if (start_sample_index < 0) start_sample_index += 16384;
                 if ((num_samples - start_sample_index) > (BUFFER_SIZE + 1))
                     num_samples = (BUFFER_SIZE - start_sample_index);
 
@@ -10558,12 +10546,13 @@ namespace PowerSDR
                         {
                             if (slope <= 1.0 || lindex == rindex)
                             {
-                                max = current_display_data[lindex % 4096] * ((float)lindex - dval + 1) + current_display_data[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                max = current_display_data[lindex % 16384] * ((float)lindex - dval + 1) +
+                                    current_display_data[(lindex + 1) % 16384] * (dval - (float)lindex);
                             }
                             else
                             {
                                 for (int j = lindex; j < rindex; j++)
-                                    if (current_display_data[j % 4096] > max) max = current_display_data[j % 4096];
+                                    if (current_display_data[j % 16384] > max) max = current_display_data[j % 16384];
                             }
                         }
 
@@ -10575,12 +10564,13 @@ namespace PowerSDR
                         {
                             if (slope <= 1.0 || lindex == rindex)
                             {
-                                max = current_display_data_bottom[lindex % 4096] * ((float)lindex - dval + 1) + current_display_data_bottom[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                max = current_display_data_bottom[lindex % 16384] * ((float)lindex - dval + 1) +
+                                    current_display_data_bottom[(lindex + 1) % 16384] * (dval - (float)lindex);
                             }
                             else
                             {
                                 for (int j = lindex; j < rindex; j++)
-                                    if (current_display_data_bottom[j % 4096] > max) max = current_display_data_bottom[j % 4096];
+                                    if (current_display_data_bottom[j % 16384] > max) max = current_display_data_bottom[j % 16384];
                             }
                         }
                         else max = current_display_data_bottom[i];
@@ -11156,7 +11146,7 @@ namespace PowerSDR
                         num_samples = (High - Low);
                         start_sample_index = (BUFFER_SIZE >> 1) + ((Low * BUFFER_SIZE) / sample_rate);
                         num_samples = ((High - Low) * BUFFER_SIZE / sample_rate);
-                        if (start_sample_index < 0) start_sample_index += 4096;
+                        if (start_sample_index < 0) start_sample_index += 16384;
                         if ((num_samples - start_sample_index) > (BUFFER_SIZE + 1))
                             num_samples = BUFFER_SIZE - start_sample_index;
 
@@ -11176,12 +11166,13 @@ namespace PowerSDR
                             {
                                 if (slope <= 1.0 || lindex == rindex)
                                 {
-                                    max = current_waterfall_data[lindex % 4096] * ((float)lindex - dval + 1) + current_waterfall_data[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                    max = current_waterfall_data[lindex % 16384] * ((float)lindex - dval + 1) + 
+                                        current_waterfall_data[(lindex + 1) % 16384] * (dval - (float)lindex);
                                 }
                                 else
                                 {
                                     for (int j = lindex; j < rindex; j++)
-                                        if (current_waterfall_data[j % 4096] > max) max = current_waterfall_data[j % 4096];
+                                        if (current_waterfall_data[j % 16384] > max) max = current_waterfall_data[j % 16384];
                                 }
                             }
                             else
@@ -11195,12 +11186,13 @@ namespace PowerSDR
                             {
                                 if (slope <= 1.0 || lindex == rindex)
                                 {
-                                    max = current_waterfall_data_bottom[lindex % 4096] * ((float)lindex - dval + 1) + current_waterfall_data_bottom[(lindex + 1) % 4096] * (dval - (float)lindex);
+                                    max = current_waterfall_data_bottom[lindex % 16384] * ((float)lindex - dval + 1) +
+                                        current_waterfall_data_bottom[(lindex + 1) % 16384] * (dval - (float)lindex);
                                 }
                                 else
                                 {
                                     for (int j = lindex; j < rindex; j++)
-                                        if (current_waterfall_data_bottom[j % 4096] > max) max = current_waterfall_data_bottom[j % 4096];
+                                        if (current_waterfall_data_bottom[j % 16384] > max) max = current_waterfall_data_bottom[j % 16384];
                                 }
                             }
                             else
@@ -12221,7 +12213,7 @@ namespace PowerSDR
                         {
                             case DisplayMode.PANAFALL:
                                 g.DrawImageUnscaled(waterfall_bmp2, 0, 3 * H + 20);
-                                break;
+                                    break;
                             default:
                                 g.DrawImageUnscaled(waterfall_bmp2, 0, H + 20);
                                 break;
@@ -12230,8 +12222,8 @@ namespace PowerSDR
                 }
                 else
                 {
-                    if (rx == 1) g.DrawImageUnscaled(waterfall_bmp, 0, 20); // draw the image on the background	
-                    else if (rx == 2) g.DrawImageUnscaled(waterfall_bmp2, 0, 20);   // draw the image on the background	
+                    if (rx == 1) g.DrawImageUnscaled(waterfall_bmp, 0, 20);	// draw the image on the background	
+                    else if (rx == 2) g.DrawImageUnscaled(waterfall_bmp2, 0, 20);	// draw the image on the background	
                 }
             }
             waterfall_counter++;
