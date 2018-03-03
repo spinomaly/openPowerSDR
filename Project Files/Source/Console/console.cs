@@ -17952,7 +17952,6 @@ namespace PowerSDR
             return true;
         }
 
-        // w6vh_3
         public bool LowPowerPASweep(Progress progress, int power) // calibrate PA Gain values
         {
             //			HiPerfTimer t1 = new HiPerfTimer();
@@ -35904,7 +35903,7 @@ namespace PowerSDR
             return false;
         }
 
-        private void ptbPWR_Scroll(object sender, System.EventArgs e) // w6vh_3
+        private void ptbPWR_Scroll(object sender, System.EventArgs e)
         {
             lblPWR.Text = "Drive:  " + ptbPWR.Value.ToString();
 
@@ -41645,7 +41644,6 @@ namespace PowerSDR
                                 break;
                         }
                     }
-                    // w6vh_3
                     if (!near_notch &&
                         !agc_knee_drag &&
                         !agc_hang_drag &&
