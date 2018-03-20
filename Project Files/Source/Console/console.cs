@@ -7598,10 +7598,10 @@ namespace PowerSDR
             this.Controls.Add(this.lblRF2);
             this.Controls.Add(this.panelBandHF);
             this.Controls.Add(this.panelBandVHF);
+            this.Controls.Add(this.panelModeSpecificCW);
             this.Controls.Add(this.panelModeSpecificPhone);
             this.Controls.Add(this.panelModeSpecificFM);
             this.Controls.Add(this.panelModeSpecificDigital);
-            this.Controls.Add(this.panelModeSpecificCW);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Console";
@@ -23105,15 +23105,43 @@ namespace PowerSDR
             }
         }
 
-        public int CATTXProfile
+        public int CATTXProfile // ZZTP
         {
             get
             {
-                return comboTXProfile.SelectedIndex;
+                switch (rx1_dsp_mode)
+                {
+                    case DSPMode.DIGL:
+                    case DSPMode.DIGU:
+                        return comboDigTXProfile.SelectedIndex;
+                    case DSPMode.FM:
+                        return comboFMTXProfile.SelectedIndex;
+                    case DSPMode.AM:
+                        return comboAMTXProfile.SelectedIndex;
+                    default:
+                        return comboTXProfile.SelectedIndex;
+                }
+               
             }
             set
             {
-                comboTXProfile.SelectedIndex = value;
+                switch (rx1_dsp_mode)
+                {
+                    case DSPMode.DIGL:
+                    case DSPMode.DIGU:
+                        comboDigTXProfile.SelectedIndex = value;
+                        break;
+                    case DSPMode.FM:
+                        comboFMTXProfile.SelectedIndex = value;
+                        break;
+                    case DSPMode.AM:
+                        comboAMTXProfile.SelectedIndex = value;
+                        break;
+                    default:
+                        comboTXProfile.SelectedIndex = value;
+                        break;
+                }
+                
             }
         }
 
@@ -34493,8 +34521,16 @@ namespace PowerSDR
             }
             else if (!e.Alt && !e.Control)
             {
-                if (this.ActiveControl is TextBoxTS) return;
-                if (this.ActiveControl is NumericUpDownTS) return;
+                if (this.ActiveControl is TextBoxTS || this.ActiveControl is NumericUpDownTS)
+                {
+                    if (e.KeyCode == Keys.Space)
+                    {
+                        btnHidden.Focus();
+                        e.SuppressKeyPress = true;
+                    }
+                    else
+                      return;
+                }
 
                 switch (e.KeyCode)
                 {
@@ -45349,9 +45385,6 @@ namespace PowerSDR
             }
             if (chkRIT.Checked && !click_tune_display) Display.RIT = (int)udRIT.Value;
 
-            /*if(udRIT.Focused)
-                btnHidden.Focus();*/
-
             setRIT_LEDs();  //-W2PA Behringer LEDs
 
             //-W2PA Sync XIT/XIT if selected
@@ -45360,7 +45393,9 @@ namespace PowerSDR
                 udXIT.Value = udRIT.Value;
                 setXIT_LEDs();
             }
-        }
+  
+            if(udRIT.Focused) btnHidden.Focus();
+      }
 
         private void setRIT_LEDs()
         {
@@ -45420,8 +45455,6 @@ namespace PowerSDR
 
             if (chkXIT.Checked) Display.XIT = (int)udXIT.Value;
 
-            //if(udXIT.Focused)
-            //btnHidden.Focus();
 
             setXIT_LEDs(); //-W2PA Behringer LEDs
 
@@ -45431,7 +45464,9 @@ namespace PowerSDR
                 udRIT.Value = udXIT.Value;
                 setRIT_LEDs();
             }
-        }
+
+            if(udXIT.Focused) btnHidden.Focus();
+     }
 
         private void btnXITReset_Click(object sender, System.EventArgs e)
         {
